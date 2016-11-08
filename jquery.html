@@ -1,0 +1,233 @@
+
+<html>
+<head>
+<meta charset="utf-8">
+<title>Image Mask Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/app.min.css"/>
+<link rel="stylesheet" href="assets/bootstrap.min.css"/>
+
+</script>
+
+<script src="assets/jquery.min.js"></script>
+<script src="assets/bootstrap.min.js"></script>
+<script src="maskMapper.js"></script>
+
+
+
+
+</head>
+
+<body>
+
+ 
+
+
+
+
+ 
+
+	<div class="container toggle-content" style="display: block;">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12" id="image-map-wrapper">
+							<div id="image-map-container">
+								<div id="image-map" style="max-width: 100%" class="image-mapper"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<table class="table" id="image-mapper-table">
+					<thead>
+						<tr>
+						<th>Active</th>
+						<th>Shape</th>
+						<th>Link</th>
+						<th>Title</th>
+						<th>Target</th>
+						<th style="width: 25px">
+						</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr   indx="0">
+							<td style="width: 65px">
+								<div class="control-label input-sm">
+								<input type="radio" name="active" value="1">
+								</div>
+							</td>
+							<td>
+								<select name="shape" class="form-control input-sm">
+								<option value="">---</option>
+								<option value="rect">Rect</option>
+								<option value="poly">Poly</option>
+								<option value="circle">Circle</option>
+								</select>
+							</td>
+							<td>
+								<input type="text" name="href" value="" placeholder="Link" class="form-control input-sm">
+							</td>
+							<td>
+								<input type="text" name="title" value="" placeholder="Title" class="form-control input-sm">
+							</td>
+							<td>
+								<select name="target" class="form-control input-sm">
+								<option value="">---</option>
+								<option value="_blank">_blank</option>
+								<option value="_parent">_parent</option>
+								<option value="_self">_self</option>
+								<option value="_top">_top</option>
+								</select>
+							</td>
+							<td>
+								<button class="btn btn-default btn-sm remove-row" name="remove" value="">
+								<span class="glyphicon glyphicon-remove"></span>
+								</button>
+							</td>
+
+						</tr>
+					</tbody>
+					<tfoot>
+					<tr>
+					<th colspan="6" style="text-align: right">
+						<button type="button" class="btn btn-danger btn-sm add-row">
+							<span class="glyphicon glyphicon-plus"></span> Add New Area
+						</button>
+						<button type="button" class="btn btn-danger btn-sm add-rect">
+							<span class="glyphicon glyphicon-plus"></span> Add rect Area
+						</button>
+						<button type="button" class="btn btn-danger btn-sm add-circle">
+							<span class="glyphicon glyphicon-plus"></span> Add circle Area
+						</button>
+						<button type="button" class="btn btn-danger btn-sm add-poly">
+							<span class="glyphicon glyphicon-plus"></span> Add poly Area
+						</button>
+					</th>
+					</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="container toggle-content segment" style="display: block;">
+		<div class="row">
+			<div class="col-md-12" style="text-align: center">
+				<button type="button" class="btn btn-success btn-lg" onclick="show_data()" >Show Me The Code!</button>
+			</div>
+		</div>
+	</div>
+
+ 
+
+<script>
+var dv="#image-map";
+$(function(){
+
+
+		
+var imageMapperRow = $("#image-mapper-table tbody").html();
+		$("button.add-row").on("click",  function (evt) {
+			$(dv).imageMapper("addArea").trigger("update");
+			evt.preventDefault();
+		});
+		$("button.add-rect").on("click",  function (evt) {
+			$(dv).imageMapper("addArea","rect").trigger("update");
+			evt.preventDefault();
+		});
+		$("button.add-circle").on("click",  function (evt) {
+			$(dv).imageMapper("addArea","circle").trigger("update");
+			evt.preventDefault();
+		});
+		$("button.add-poly").on("click",  function (evt) {
+			$(dv).imageMapper("addArea","poly").trigger("update");
+			evt.preventDefault();
+		});
+		$(dv).on("update", function () {
+			var data = $(this).imageMapper("getData"); 
+			 var table = $("#image-mapper-table");
+			var row = imageMapperRow;
+			$("tbody", table).html("");
+			$.each(data.area, function (i) {
+				 
+				bindRow( $("tbody", table).append(row).find('tr:last').attr('indx',i) ,i);
+				
+			}); 
+			 
+			bindValues();
+		});
+		$(dv).on("update",  function () {
+			var data = $(this).imageMapper("getData");
+			if(!data.options.src.length)
+				$(".toggle-content").hide();
+			else
+				$(".toggle-content").show();
+			
+		});
+		function bindValues()
+		{
+			var data=$(dv).imageMapper("getData");
+			var table = $("#image-mapper-table");
+			data.area.forEach(function(area,indx){
+				var tr=$('tr[indx='+indx+']',table);
+				"shape,href,title,target".split(',').forEach(function(name){
+					$('[name='+name+']',tr).val(area[name]||"");
+				})
+			});
+			$('[name=active]',table).attr('checked',!1);
+			$('[name=active]','tr[indx='+data.state.areaIndex+']',table).each(function(){this.checked=true});
+		}
+		function bindRow(row,indx)
+		{
+			 
+			$('button[name=remove]',row).on("click",  function () {
+						$(dv).imageMapper('removeArea',indx);
+						$(dv).imageMapper('refresh');
+						
+						 
+			});
+			
+			$('input[name],select[name]',row).on("change",function () {
+				var name=$(this).attr('name');
+				if(name=='active')
+				{
+					$(row).parents('table').find('[name=active]').not(this).attr("checked", !1);
+					$(dv).imageMapper('setActive',indx);				
+				}
+				else
+					$(dv).imageMapper('setProperty',indx,name, $(this).val()  )
+			})
+			 
+		}
+	
+	$(dv).imageMapper({
+		src : 'image.jpg',
+		event : {
+			init : function () {
+				$(dv).trigger("update")
+			},
+			update : function () {
+				$(dv).trigger("update")
+			},
+			removeArea : function () {
+				$(dv).trigger("update")
+			}
+		}
+	});
+		
+});		
+		
+		
+function show_data		()
+{
+console.info( $(dv).imageMapper("getData") );
+}
+</script> 
+ 
+</body>
+</html>

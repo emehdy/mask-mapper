@@ -1,0 +1,99 @@
+ 
+
+
+
+<div class="container toggle-content" style="display: block;">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12" id="image-map-wrapper">
+							<div id="image-map-container">
+								<div id="image-map" style="max-width: 100%" class="image-mapper"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<table class="table" id="image-mapper-table">
+					<thead>
+						<tr>
+						<th>Active</th>
+						<th>Shape</th>
+						<th>Link</th>
+						<th>Title</th>
+						<th>Target</th>
+						<th style="width: 25px">
+						</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr  ng-repeat="area in mapper.area"  >
+							<td style="width: 65px">
+								<div class="control-label input-sm">
+								<input type="radio" ng-model="mapper.state.areaIndex" ng-value="$index" ng-change="setActive($index)"> {{html.checked[$index]}}
+								</div>
+							</td>
+							<td>
+								<select ng-model="area.shape" readonly class="form-control input-sm">
+								<option value="">---</option>
+								<option value="rect">Rect</option>
+								<option value="poly">Poly</option>
+								<option value="circle">Circle</option>
+								</select>
+							</td>
+							<td>
+								<input type="text" ng-model="area.href" ng-change="setProperty($index,'href')" value="" placeholder="Link" class="form-control input-sm">
+							</td>
+							<td>
+								<input type="text" ng-model="area.title" ng-change="setProperty($index,'title')" value="" placeholder="Title" class="form-control input-sm">
+							</td>
+							<td>
+								<select ng-model="area.target" ng-change="setProperty($index,'target')" class="form-control input-sm">
+								<option value="">---</option>
+								<option value="_blank">_blank</option>
+								<option value="_parent">_parent</option>
+								<option value="_self">_self</option>
+								<option value="_top">_top</option>
+								</select>
+							</td>
+							<td>
+								<button class="btn btn-default btn-sm remove-row" ng-click="removeArea($index)" value="">
+								<span class="glyphicon glyphicon-remove"></span>
+								</button>
+							</td>
+
+						</tr>
+					</tbody>
+					<tfoot>
+					<tr>
+					<th colspan="6" style="text-align: right">
+						 
+						<button type="button" class="btn btn-danger btn-sm" ng-click="addArea('rect')">
+							<span class="glyphicon glyphicon-plus"></span> Add rect Area
+						</button>
+						<button type="button" class="btn btn-danger btn-sm" ng-click="addArea('circle')">
+							<span class="glyphicon glyphicon-plus"></span> Add circle Area
+						</button>
+						<button type="button" class="btn btn-danger btn-sm" ng-click="addArea('poly')">
+							<span class="glyphicon glyphicon-plus"></span> Add poly Area
+						</button>
+					</th>
+					</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="container toggle-content segment" style="display: block;">
+		<div class="row">
+			<div class="col-md-12" style="text-align: center">
+				<button type="button" class="btn btn-success btn-lg"  ng-click="asHTML()" >Show  The Code!</button>
+			</div>
+		</div>
+	</div>
+
+<pre>{{html}}</pre>
